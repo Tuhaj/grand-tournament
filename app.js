@@ -144,10 +144,107 @@ const gameState = {
     history: []
 };
 
+// LocalStorage functions
+function saveGame() {
+    try {
+        localStorage.setItem('grandTournamentState', JSON.stringify(gameState));
+    } catch (e) {
+        console.error('Error saving game to localStorage:', e);
+    }
+}
+
+function loadGame() {
+    try {
+        const saved = localStorage.getItem('grandTournamentState');
+        if (saved) {
+            const loaded = JSON.parse(saved);
+            Object.assign(gameState, loaded);
+
+            // Restore UI
+            restoreUI();
+            addToHistory('💾 Gra wczytana z ostatniego zapisu');
+            return true;
+        }
+    } catch (e) {
+        console.error('Error loading game from localStorage:', e);
+    }
+    return false;
+}
+
+function restoreUI() {
+    // Restore knights
+    for (let player = 1; player <= 2; player++) {
+        const playerState = gameState[`player${player}`];
+
+        if (playerState.knight) {
+            displayKnight(player, playerState.knight, playerState.knight.faction);
+        }
+
+        if (playerState.modifier) {
+            displayModifier(player, playerState.modifier);
+        }
+
+        if (playerState.diceRolls.length > 0) {
+            displayDiceRoll(player);
+        }
+
+        // Restore phases
+        for (let i = 1; i <= 4; i++) {
+            const value = playerState.phases[i - 1];
+            if (value > 0) {
+                document.getElementById(`phase${i}_${player}`).value = value;
+            }
+        }
+
+        // Restore glory points
+        document.getElementById(`glory${player}`).textContent = playerState.gloryPoints;
+
+        // Update mobile score
+        updateMobileScore();
+    }
+}
+
+function clearSavedGame() {
+    localStorage.removeItem('grandTournamentState');
+}
+
+// Update mobile score display
+function updateMobileScore() {
+    const score1 = gameState.player1.gloryPoints;
+    const score2 = gameState.player2.gloryPoints;
+
+    const mobileScore1 = document.getElementById('mobileScore1');
+    const mobileScore2 = document.getElementById('mobileScore2');
+
+    if (mobileScore1) mobileScore1.textContent = score1;
+    if (mobileScore2) mobileScore2.textContent = score2;
+
+    // Highlight winner
+    const tab1 = document.querySelector('[data-bs-target="#player1Tab"]');
+    const tab2 = document.querySelector('[data-bs-target="#player2Tab"]');
+
+    if (tab1 && tab2) {
+        tab1.classList.remove('winning');
+        tab2.classList.remove('winning');
+
+        if (score1 > score2 && score1 > 0) {
+            tab1.classList.add('winning');
+        } else if (score2 > score1 && score2 > 0) {
+            tab2.classList.add('winning');
+        }
+    }
+}
+
 // Inicjalizacja
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
-    addToHistory('🎮 Gra rozpoczęta! Wybierzcie rycerzy i przydomki.');
+
+    // Try to load saved game
+    if (!loadGame()) {
+        addToHistory('🎮 Gra rozpoczęta! Wybierzcie rycerzy i przydomki.');
+    }
+
+    updateMobileScore();
 });
 
 function setupEventListeners() {
@@ -180,6 +277,7 @@ function drawKnight(player) {
 
     displayKnight(player, knight, faction);
     addToHistory(`⚔️ Gracz ${player} wylosował: ${knight.name} (${faction === 'freelancers' ? 'Błędny Rycerz' : 'Imperialny'})`);
+    saveGame();
 }
 
 function displayKnight(player, knight, faction) {
@@ -220,6 +318,7 @@ function drawModifier(player) {
 
     displayModifier(player, modifier);
     addToHistory(`🎭 Gracz ${player} otrzymał przydomek: ${modifier.name} (${modifier.effect})`);
+    saveGame();
 }
 
 function displayModifier(player, modifier) {
@@ -250,6 +349,8 @@ function rollDice(player, sides) {
     const resultContainer = document.getElementById(`diceResult${player}`);
     resultContainer.classList.add('pulse');
     setTimeout(() => resultContainer.classList.remove('pulse'), 500);
+
+    saveGame();
 }
 
 function displayDiceRoll(player) {
@@ -315,6 +416,7 @@ function calculateTotal(player) {
     totalElement.parentElement.classList.add('pulse');
     setTimeout(() => totalElement.parentElement.classList.remove('pulse'), 500);
 
+    saveGame();
     return totalScore;
 }
 
@@ -331,6 +433,9 @@ function addGlory(player, amount) {
 
     const action = amount > 0 ? 'zdobył' : 'stracił';
     addToHistory(`⭐ Gracz ${player} ${action} ${Math.abs(amount)} punktów chwały! Razem: ${gameState[`player${player}`].gloryPoints}`);
+
+    updateMobileScore();
+    saveGame();
 }
 
 // Historia
@@ -384,6 +489,7 @@ function drawRandomCards(count) {
 // Nowa gra
 function newGame() {
     if (confirm('Czy na pewno chcesz rozpocząć nową grę? Obecny postęp zostanie utracony.')) {
+        clearSavedGame();
         resetGame();
 
         // Rozdaj karty graczom
@@ -393,6 +499,9 @@ function newGame() {
         addToHistory('🎮 Rozpoczęto nową grę!');
         addToHistory(`🃏 Gracz 1 otrzymał ${gameState.player1.cards.length} kart`);
         addToHistory(`🃏 Gracz 2 otrzymał ${gameState.player2.cards.length} kart`);
+
+        updateMobileScore();
+        saveGame();
     }
 }
 
@@ -506,20 +615,7 @@ function clearDiceRolls(player) {
     gameState[`player${player}`].diceRolls = [];
     displayDiceRoll(player);
     addToHistory(`🗑️ Gracz ${player} wyczyścił rzuty kośćmi`);
-}
-
-// Auto-save do localStorage (opcjonalne)
-function saveGame() {
-    localStorage.setItem('grandTournamentState', JSON.stringify(gameState));
-}
-
-function loadGame() {
-    const saved = localStorage.getItem('grandTournamentState');
-    if (saved) {
-        Object.assign(gameState, JSON.parse(saved));
-        // Tutaj można dodać kod do odświeżenia UI
-        addToHistory('💾 Wczytano zapisany stan gry');
-    }
+    saveGame();
 }
 
 // Skróty klawiszowe (opcjonalne)

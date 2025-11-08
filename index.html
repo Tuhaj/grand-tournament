@@ -27,6 +27,30 @@
         </div>
     </nav>
 
+    <!-- Mobile Score Bar (visible only on mobile) -->
+    <div class="mobile-score-bar d-lg-none">
+        <div class="container-fluid">
+            <ul class="nav nav-pills nav-fill">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#player1Tab">
+                        <i class="bi bi-person-fill"></i> Gracz 1
+                        <div class="score-badge">
+                            <i class="bi bi-trophy-fill"></i> <span id="mobileScore1">0</span>
+                        </div>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#player2Tab">
+                        <i class="bi bi-person-fill"></i> Gracz 2
+                        <div class="score-badge">
+                            <i class="bi bi-trophy-fill"></i> <span id="mobileScore2">0</span>
+                        </div>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
     <div class="container-fluid px-4">
         <!-- Control Panel -->
         <div class="row mb-4">
@@ -45,9 +69,11 @@
         </div>
 
         <!-- Game Area -->
-        <div class="row g-4 mb-4">
-            <!-- Player 1 -->
-            <div class="col-lg-6">
+        <div class="tab-content">
+            <!-- Player 1 Tab Pane -->
+            <div class="tab-pane fade show active" id="player1Tab" role="tabpanel">
+                <div class="row g-4 mb-4">
+                    <div class="col-12">
                 <div class="card shadow h-100 border-primary">
                     <div class="card-header bg-primary text-white">
                         <div class="d-flex justify-content-between align-items-center">
@@ -145,10 +171,14 @@
                         </div>
                     </div>
                 </div>
+                </div>
+            </div>
             </div>
 
-            <!-- Player 2 -->
-            <div class="col-lg-6">
+            <!-- Player 2 Tab Pane -->
+            <div class="tab-pane fade" id="player2Tab" role="tabpanel">
+                <div class="row g-4 mb-4">
+                    <div class="col-12">
                 <div class="card shadow h-100 border-danger">
                     <div class="card-header bg-danger text-white">
                         <div class="d-flex justify-content-between align-items-center">
@@ -246,6 +276,8 @@
                         </div>
                     </div>
                 </div>
+                </div>
+            </div>
             </div>
         </div>
 
