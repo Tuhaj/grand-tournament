@@ -184,6 +184,9 @@
                             <button class="btn btn-outline-secondary" onclick="showItems(1)">
                                 <i class="bi bi-box-seam"></i> Wybierz Przedmioty
                             </button>
+                            <button class="btn btn-outline-primary" onclick="showModifiersSummary(1)">
+                                <i class="bi bi-calculator-fill"></i> Pokaż Modyfikatory
+                            </button>
                             <button class="btn btn-success" onclick="calculateTotal(1)">
                                 <i class="bi bi-calculator"></i> Oblicz Wynik
                             </button>
@@ -316,6 +319,9 @@
                             <button class="btn btn-outline-secondary" onclick="showItems(2)">
                                 <i class="bi bi-box-seam"></i> Wybierz Przedmioty
                             </button>
+                            <button class="btn btn-outline-primary" onclick="showModifiersSummary(2)">
+                                <i class="bi bi-calculator-fill"></i> Pokaż Modyfikatory
+                            </button>
                             <button class="btn btn-success" onclick="calculateTotal(2)">
                                 <i class="bi bi-calculator"></i> Oblicz Wynik
                             </button>
@@ -403,6 +409,26 @@
                     <button type="button" class="btn btn-primary" onclick="saveSelectedItems()" data-bs-dismiss="modal">
                         <i class="bi bi-check-circle"></i> Zapisz Wybór
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modifiers Summary Modal -->
+    <div class="modal fade" id="modifiersSummaryModal" tabindex="-1" aria-labelledby="modifiersSummaryLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modifiersSummaryLabel">
+                        <i class="bi bi-calculator-fill"></i> Podsumowanie Modyfikatorów
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content will be inserted dynamically -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Zamknij</button>
                 </div>
             </div>
         </div>
