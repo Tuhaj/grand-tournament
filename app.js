@@ -654,7 +654,6 @@ function showCards(player) {
                     <h4 class="card-title mb-2">${card.name}</h4>
                     <p class="badge bg-secondary mb-2">${card.type}</p>
                     <p class="text-success fw-bold fs-5">${card.effect}</p>
-                    <p class="text-muted">${card.description}</p>
                 </div>
             </div>
         `;
@@ -702,7 +701,6 @@ function showItems(player) {
                         <span class="badge bg-secondary ms-2">${item.type}</span>
                     </div>
                     <p class="text-success fw-bold mb-1 small">${item.effect}</p>
-                    <p class="text-muted mb-0 small">${item.description}</p>
                 </div>
             </label>
         `;
