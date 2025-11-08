@@ -47,9 +47,14 @@ grand-tournament/
 ├── app.js             # Logika gry
 ├── public/            # Zasoby graficzne
 │   └── img/          # Obrazy kart, rycerzy, modyfikatorów
+├── tests/             # Testy jednostkowe
+│   └── game.test.js  # Testy logiki gry
 ├── README.md          # Opis gry
 ├── DESIGN_GUIDELINES.md  # Wytyczne projektowe
-└── INSTRUKCJA.md      # Ten plik
+├── TESTING.md         # Dokumentacja testów
+├── INSTRUKCJA.md      # Ten plik
+├── package.json       # Zależności i skrypty
+└── vitest.config.js   # Konfiguracja testów
 ```
 
 ## Jak Grać
@@ -122,12 +127,35 @@ Kliknij **"Oblicz Wynik"** aby zsumować:
 
 ### 🔮 Planowane rozszerzenia (opcjonalne)
 
-- Zapis/wczytywanie stanu gry (localStorage)
+- ✅ Zapis/wczytywanie stanu gry (localStorage) - ZAIMPLEMENTOWANE
+- ✅ Wizualizacja kart z grafikami - ZAIMPLEMENTOWANE
+- ✅ System kart i przedmiotów - ZAIMPLEMENTOWANE
 - Pełna plansza z wieśniakami i postaciami specjalnymi
 - System trybun z 3 rzędami (k8, k6, k4)
-- Wizualizacja kart z grafikami
 - Tryb multiplayer online
 - Eksport wyników do PDF
+
+## Testowanie
+
+Aplikacja posiada testy jednostkowe sprawdzające poprawność logiki gry.
+
+### Uruchamianie testów
+
+```bash
+# Instalacja zależności
+npm install
+
+# Jednorazowe uruchomienie testów
+npm test
+
+# Tryb watch (auto-reload)
+npm run test:watch
+
+# Testy z pokryciem kodu
+npm run test:coverage
+```
+
+Więcej informacji w pliku [TESTING.md](TESTING.md)
 
 ## Wsparcie Przeglądarek
 
