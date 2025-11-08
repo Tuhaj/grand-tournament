@@ -4,198 +4,250 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grand Tournament - Turniej Rycerski</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🏰 Grand Tournament 🏰</h1>
-            <p class="subtitle">Turniej Rycerski</p>
-        </header>
+<body class="bg-light">
+    <!-- Header -->
+    <nav class="navbar navbar-dark bg-gradient shadow-sm mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1 mx-auto">
+                <i class="bi bi-shield-fill-check"></i> Grand Tournament
+            </span>
+        </div>
+    </nav>
 
-        <main>
-            <!-- Panel kontrolny -->
-            <div class="control-panel">
-                <button id="newGameBtn" class="btn btn-primary">Nowa Gra</button>
-                <button id="resetBtn" class="btn btn-secondary">Reset</button>
+    <div class="container-fluid px-4">
+        <!-- Control Panel -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <button id="newGameBtn" class="btn btn-success btn-lg me-2">
+                            <i class="bi bi-play-circle"></i> Nowa Gra
+                        </button>
+                        <button id="resetBtn" class="btn btn-outline-danger btn-lg">
+                            <i class="bi bi-arrow-clockwise"></i> Reset
+                        </button>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <!-- Obszar gry dla dwóch graczy -->
-            <div class="game-area">
-                <!-- Gracz 1 -->
-                <div class="player-section" id="player1">
-                    <div class="player-header">
-                        <h2>Gracz 1</h2>
-                        <div class="glory-points">
-                            <span class="label">Punkty Chwały:</span>
-                            <span class="points" id="glory1">0</span>
+        <!-- Game Area -->
+        <div class="row g-4 mb-4">
+            <!-- Player 1 -->
+            <div class="col-lg-6">
+                <div class="card shadow h-100 border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0"><i class="bi bi-person-fill"></i> Gracz 1</h4>
+                            <h3 class="mb-0">
+                                <span class="badge bg-warning text-dark" id="glory1">0</span>
+                                <small class="fs-6 ms-1">punktów</small>
+                            </h3>
                         </div>
                     </div>
+                    <div class="card-body">
 
-                    <!-- Karty gracza 1 -->
-                    <div class="cards-section">
-                        <div class="card-slot">
-                            <h3>Rycerz</h3>
-                            <div class="card-display" id="knight1">
-                                <button class="btn-draw" onclick="drawKnight(1)">Losuj Rycerza</button>
+                        <!-- Cards Section -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2"><i class="bi bi-shield"></i> Rycerz</h6>
+                                <div class="card-display border rounded p-3 bg-white" id="knight1">
+                                    <button class="btn btn-outline-primary w-100" onclick="drawKnight(1)">
+                                        <i class="bi bi-shuffle"></i> Losuj Rycerza
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2"><i class="bi bi-star"></i> Przydomek</h6>
+                                <div class="card-display border rounded p-3 bg-white" id="modifier1">
+                                    <button class="btn btn-outline-primary w-100" onclick="drawModifier(1)">
+                                        <i class="bi bi-shuffle"></i> Losuj Przydomek
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="card-slot">
-                            <h3>Przydomek</h3>
-                            <div class="card-display" id="modifier1">
-                                <button class="btn-draw" onclick="drawModifier(1)">Losuj Przydomek</button>
+                        <!-- Dice Section -->
+                        <h6 class="text-muted mb-2"><i class="bi bi-dice-6"></i> Rzuty Kośćmi</h6>
+                        <div class="btn-group w-100 mb-3" role="group">
+                            <button class="btn btn-outline-info" onclick="rollDice(1, 4)">
+                                <i class="bi bi-dice-4"></i> k4
+                            </button>
+                            <button class="btn btn-outline-info" onclick="rollDice(1, 6)">
+                                <i class="bi bi-dice-5"></i> k6
+                            </button>
+                            <button class="btn btn-outline-info" onclick="rollDice(1, 8)">
+                                <i class="bi bi-dice-6"></i> k8
+                            </button>
+                        </div>
+                        <div class="alert alert-light text-center" id="diceResult1">
+                            <div class="result-display fs-4 fw-bold">-</div>
+                        </div>
+                        <div class="alert alert-warning text-center mb-3">
+                            <strong>Suma:</strong> <span id="total1" class="fs-4 fw-bold">0</span>
+                        </div>
+
+                        <!-- Phases Section -->
+                        <h6 class="text-muted mb-2"><i class="bi bi-list-ol"></i> Fazy Pojedynku</h6>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small">Faza 1 - Rozpęd</label>
+                                <input type="number" class="form-control" id="phase1_1" placeholder="0" min="0">
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Kości -->
-                    <div class="dice-section">
-                        <h3>Rzuty Kośćmi</h3>
-                        <div class="dice-controls">
-                            <button class="btn-dice" onclick="rollDice(1, 4)">
-                                <span class="dice-icon">🎲</span> k4
-                            </button>
-                            <button class="btn-dice" onclick="rollDice(1, 6)">
-                                <span class="dice-icon">🎲</span> k6
-                            </button>
-                            <button class="btn-dice" onclick="rollDice(1, 8)">
-                                <span class="dice-icon">🎲</span> k8
-                            </button>
-                        </div>
-                        <div class="dice-result" id="diceResult1">
-                            <div class="result-display">-</div>
-                        </div>
-                        <div class="total-score">
-                            <strong>Suma:</strong> <span id="total1">0</span>
-                        </div>
-                    </div>
-
-                    <!-- Fazy pojedynku -->
-                    <div class="phases-section">
-                        <h3>Fazy Pojedynku</h3>
-                        <div class="phase" data-phase="1">
-                            <div class="phase-header">Faza 1 - Rozpęd</div>
-                            <input type="number" class="phase-input" id="phase1_1" placeholder="0" min="0">
-                        </div>
-                        <div class="phase" data-phase="2">
-                            <div class="phase-header">Faza 2 - Skupienie</div>
-                            <input type="number" class="phase-input" id="phase2_1" placeholder="0" min="0">
-                        </div>
-                        <div class="phase" data-phase="3">
-                            <div class="phase-header">Faza 3 - Uderzenie</div>
-                            <input type="number" class="phase-input" id="phase3_1" placeholder="0" min="0">
-                        </div>
-                        <div class="phase" data-phase="4">
-                            <div class="phase-header">Faza 4 - Finalizacja</div>
-                            <input type="number" class="phase-input" id="phase4_1" placeholder="0" min="0">
-                        </div>
-                    </div>
-
-                    <!-- Przyciski akcji -->
-                    <div class="actions">
-                        <button class="btn btn-success" onclick="calculateTotal(1)">Oblicz Wynik</button>
-                        <button class="btn btn-glory" onclick="addGlory(1, 10)">+10 Chwały</button>
-                        <button class="btn btn-glory" onclick="addGlory(1, -10)">-10 Chwały</button>
-                    </div>
-                </div>
-
-                <!-- VS Separator -->
-                <div class="vs-separator">
-                    <div class="vs-circle">VS</div>
-                </div>
-
-                <!-- Gracz 2 -->
-                <div class="player-section" id="player2">
-                    <div class="player-header">
-                        <h2>Gracz 2</h2>
-                        <div class="glory-points">
-                            <span class="label">Punkty Chwały:</span>
-                            <span class="points" id="glory2">0</span>
-                        </div>
-                    </div>
-
-                    <!-- Karty gracza 2 -->
-                    <div class="cards-section">
-                        <div class="card-slot">
-                            <h3>Rycerz</h3>
-                            <div class="card-display" id="knight2">
-                                <button class="btn-draw" onclick="drawKnight(2)">Losuj Rycerza</button>
+                            <div class="col-6">
+                                <label class="form-label small">Faza 2 - Skupienie</label>
+                                <input type="number" class="form-control" id="phase2_1" placeholder="0" min="0">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">Faza 3 - Uderzenie</label>
+                                <input type="number" class="form-control" id="phase3_1" placeholder="0" min="0">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">Faza 4 - Finalizacja</label>
+                                <input type="number" class="form-control" id="phase4_1" placeholder="0" min="0">
                             </div>
                         </div>
 
-                        <div class="card-slot">
-                            <h3>Przydomek</h3>
-                            <div class="card-display" id="modifier2">
-                                <button class="btn-draw" onclick="drawModifier(2)">Losuj Przydomek</button>
+                        <!-- Actions -->
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success" onclick="calculateTotal(1)">
+                                <i class="bi bi-calculator"></i> Oblicz Wynik
+                            </button>
+                            <div class="btn-group">
+                                <button class="btn btn-warning" onclick="addGlory(1, 10)">
+                                    <i class="bi bi-plus-circle"></i> +10 Chwały
+                                </button>
+                                <button class="btn btn-outline-warning" onclick="addGlory(1, -10)">
+                                    <i class="bi bi-dash-circle"></i> -10 Chwały
+                                </button>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Kości -->
-                    <div class="dice-section">
-                        <h3>Rzuty Kośćmi</h3>
-                        <div class="dice-controls">
-                            <button class="btn-dice" onclick="rollDice(2, 4)">
-                                <span class="dice-icon">🎲</span> k4
-                            </button>
-                            <button class="btn-dice" onclick="rollDice(2, 6)">
-                                <span class="dice-icon">🎲</span> k6
-                            </button>
-                            <button class="btn-dice" onclick="rollDice(2, 8)">
-                                <span class="dice-icon">🎲</span> k8
-                            </button>
-                        </div>
-                        <div class="dice-result" id="diceResult2">
-                            <div class="result-display">-</div>
-                        </div>
-                        <div class="total-score">
-                            <strong>Suma:</strong> <span id="total2">0</span>
-                        </div>
-                    </div>
-
-                    <!-- Fazy pojedynku -->
-                    <div class="phases-section">
-                        <h3>Fazy Pojedynku</h3>
-                        <div class="phase" data-phase="1">
-                            <div class="phase-header">Faza 1 - Rozpęd</div>
-                            <input type="number" class="phase-input" id="phase1_2" placeholder="0" min="0">
-                        </div>
-                        <div class="phase" data-phase="2">
-                            <div class="phase-header">Faza 2 - Skupienie</div>
-                            <input type="number" class="phase-input" id="phase2_2" placeholder="0" min="0">
-                        </div>
-                        <div class="phase" data-phase="3">
-                            <div class="phase-header">Faza 3 - Uderzenie</div>
-                            <input type="number" class="phase-input" id="phase3_2" placeholder="0" min="0">
-                        </div>
-                        <div class="phase" data-phase="4">
-                            <div class="phase-header">Faza 4 - Finalizacja</div>
-                            <input type="number" class="phase-input" id="phase4_2" placeholder="0" min="0">
-                        </div>
-                    </div>
-
-                    <!-- Przyciski akcji -->
-                    <div class="actions">
-                        <button class="btn btn-success" onclick="calculateTotal(2)">Oblicz Wynik</button>
-                        <button class="btn btn-glory" onclick="addGlory(2, 10)">+10 Chwały</button>
-                        <button class="btn btn-glory" onclick="addGlory(2, -10)">-10 Chwały</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Historia rzutów -->
-            <div class="history-section">
-                <h3>Historia Gry</h3>
-                <div id="history" class="history-log"></div>
-            </div>
-        </main>
+            <!-- Player 2 -->
+            <div class="col-lg-6">
+                <div class="card shadow h-100 border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0"><i class="bi bi-person-fill"></i> Gracz 2</h4>
+                            <h3 class="mb-0">
+                                <span class="badge bg-warning text-dark" id="glory2">0</span>
+                                <small class="fs-6 ms-1">punktów</small>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="card-body">
 
-        <footer>
-            <p>Grand Tournament © 2025 | Have a great Grand Tournament!</p>
-        </footer>
+                        <!-- Cards Section -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2"><i class="bi bi-shield"></i> Rycerz</h6>
+                                <div class="card-display border rounded p-3 bg-white" id="knight2">
+                                    <button class="btn btn-outline-danger w-100" onclick="drawKnight(2)">
+                                        <i class="bi bi-shuffle"></i> Losuj Rycerza
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2"><i class="bi bi-star"></i> Przydomek</h6>
+                                <div class="card-display border rounded p-3 bg-white" id="modifier2">
+                                    <button class="btn btn-outline-danger w-100" onclick="drawModifier(2)">
+                                        <i class="bi bi-shuffle"></i> Losuj Przydomek
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dice Section -->
+                        <h6 class="text-muted mb-2"><i class="bi bi-dice-6"></i> Rzuty Kośćmi</h6>
+                        <div class="btn-group w-100 mb-3" role="group">
+                            <button class="btn btn-outline-info" onclick="rollDice(2, 4)">
+                                <i class="bi bi-dice-4"></i> k4
+                            </button>
+                            <button class="btn btn-outline-info" onclick="rollDice(2, 6)">
+                                <i class="bi bi-dice-5"></i> k6
+                            </button>
+                            <button class="btn btn-outline-info" onclick="rollDice(2, 8)">
+                                <i class="bi bi-dice-6"></i> k8
+                            </button>
+                        </div>
+                        <div class="alert alert-light text-center" id="diceResult2">
+                            <div class="result-display fs-4 fw-bold">-</div>
+                        </div>
+                        <div class="alert alert-warning text-center mb-3">
+                            <strong>Suma:</strong> <span id="total2" class="fs-4 fw-bold">0</span>
+                        </div>
+
+                        <!-- Phases Section -->
+                        <h6 class="text-muted mb-2"><i class="bi bi-list-ol"></i> Fazy Pojedynku</h6>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small">Faza 1 - Rozpęd</label>
+                                <input type="number" class="form-control" id="phase1_2" placeholder="0" min="0">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">Faza 2 - Skupienie</label>
+                                <input type="number" class="form-control" id="phase2_2" placeholder="0" min="0">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">Faza 3 - Uderzenie</label>
+                                <input type="number" class="form-control" id="phase3_2" placeholder="0" min="0">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small">Faza 4 - Finalizacja</label>
+                                <input type="number" class="form-control" id="phase4_2" placeholder="0" min="0">
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success" onclick="calculateTotal(2)">
+                                <i class="bi bi-calculator"></i> Oblicz Wynik
+                            </button>
+                            <div class="btn-group">
+                                <button class="btn btn-warning" onclick="addGlory(2, 10)">
+                                    <i class="bi bi-plus-circle"></i> +10 Chwały
+                                </button>
+                                <button class="btn btn-outline-warning" onclick="addGlory(2, -10)">
+                                    <i class="bi bi-dash-circle"></i> -10 Chwały
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Historia Gry</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="history" class="history-log overflow-auto" style="max-height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <p class="mb-0">Grand Tournament © 2025 | <i class="bi bi-trophy-fill"></i> Have a great Grand Tournament!</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

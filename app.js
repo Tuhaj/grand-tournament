@@ -80,17 +80,20 @@ function drawKnight(player) {
 
 function displayKnight(player, knight, faction) {
     const container = document.getElementById(`knight${player}`);
-    const factionColor = faction === 'freelancers' ? '#E8D4F8' : '#B8E8F5';
+    const factionBadge = faction === 'freelancers'
+        ? '<span class="badge bg-purple text-white">Błędny Rycerz</span>'
+        : '<span class="badge bg-info text-dark">Imperialny</span>';
 
     container.innerHTML = `
-        <div class="card-content fade-in" style="background: ${factionColor}; padding: 16px; border-radius: 8px;">
+        <div class="card-content fade-in">
             <div class="card-name">${knight.name}</div>
-            <div class="card-stats">
-                <div><strong>Siła:</strong> ${knight.strength}</div>
-                <div><strong>Celność:</strong> ${knight.accuracy}</div>
-                <div><strong>Zręczność:</strong> ${knight.agility}</div>
+            ${factionBadge}
+            <div class="card-stats mt-2">
+                <span class="stat-badge stat-strength"><i class="bi bi-lightning-fill"></i> Siła: ${knight.strength}</span>
+                <span class="stat-badge stat-accuracy"><i class="bi bi-bullseye"></i> Celność: ${knight.accuracy}</span>
+                <span class="stat-badge stat-agility"><i class="bi bi-speedometer"></i> Zręczność: ${knight.agility}</span>
             </div>
-            <p style="margin-top: 12px; font-size: 0.85rem; font-style: italic;">${knight.description}</p>
+            <p class="card-description">${knight.description}</p>
         </div>
     `;
 }
@@ -107,14 +110,15 @@ function drawModifier(player) {
 
 function displayModifier(player, modifier) {
     const container = document.getElementById(`modifier${player}`);
-    const modifierClass = modifier.modifier > 0 ? 'modifier-positive' : 'modifier-negative';
-    const modifierText = modifier.modifier > 0 ? `+${modifier.modifier}` : modifier.modifier;
+    const modifierClass = modifier.modifier > 0 ? 'modifier-negative' : 'modifier-positive';
+    const modifierIcon = modifier.modifier > 0 ? '⚠️' : '✨';
 
     container.innerHTML = `
-        <div class="card-content fade-in" style="background: #C8E6C9; padding: 16px; border-radius: 8px;">
-            <div class="card-name">${modifier.name}</div>
-            <div class="card-modifier ${modifierClass}">${modifierText}</div>
-            <p style="margin-top: 12px; font-size: 0.9rem;">${modifier.effect}</p>
+        <div class="card-content fade-in">
+            <div class="card-name">${modifierIcon} ${modifier.name}</div>
+            <span class="badge ${modifierClass === 'modifier-positive' ? 'bg-success' : 'bg-danger'} mb-2">
+                ${modifier.effect}
+            </span>
         </div>
     `;
 }
