@@ -1,6 +1,35 @@
 // Grand Tournament - Game Logic
 // Aplikacja do losowania kart, rzucania kośćmi i liczenia punktów
 
+// Splash Screen
+(function() {
+    const splashImages = [
+        'public/img/splash-screen.png',
+        'public/img/splash-screen-2.png'
+    ];
+
+    // Losowy wybór obrazka
+    const randomImage = splashImages[Math.floor(Math.random() * splashImages.length)];
+    const splashImageElement = document.getElementById('splashImage');
+
+    if (splashImageElement) {
+        splashImageElement.src = randomImage;
+    }
+
+    // Ukryj splash screen po 2.5 sekundach
+    setTimeout(() => {
+        const splashScreen = document.getElementById('splashScreen');
+        if (splashScreen) {
+            splashScreen.classList.add('hidden');
+
+            // Usuń element z DOM po zakończeniu animacji
+            setTimeout(() => {
+                splashScreen.remove();
+            }, 500);
+        }
+    }, 2500);
+})();
+
 // Dane gry
 const KNIGHTS = {
     freelancers: [
