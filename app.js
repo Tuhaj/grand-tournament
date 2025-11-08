@@ -499,6 +499,7 @@ window.rollDice = rollDice;
 window.calculateTotal = calculateTotal;
 window.addGlory = addGlory;
 window.showCards = showCards;
+window.clearDiceRolls = clearDiceRolls;
 
 // Dodatkowe funkcje pomocnicze
 function clearDiceRolls(player) {
