@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Tournament - Turniej Rycerski</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏰 Grand Tournament 🏰</h1>
+            <p class="subtitle">Turniej Rycerski</p>
+        </header>
+
+        <main>
+            <!-- Panel kontrolny -->
+            <div class="control-panel">
+                <button id="newGameBtn" class="btn btn-primary">Nowa Gra</button>
+                <button id="resetBtn" class="btn btn-secondary">Reset</button>
+            </div>
+
+            <!-- Obszar gry dla dwóch graczy -->
+            <div class="game-area">
+                <!-- Gracz 1 -->
+                <div class="player-section" id="player1">
+                    <div class="player-header">
+                        <h2>Gracz 1</h2>
+                        <div class="glory-points">
+                            <span class="label">Punkty Chwały:</span>
+                            <span class="points" id="glory1">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Karty gracza 1 -->
+                    <div class="cards-section">
+                        <div class="card-slot">
+                            <h3>Rycerz</h3>
+                            <div class="card-display" id="knight1">
+                                <button class="btn-draw" onclick="drawKnight(1)">Losuj Rycerza</button>
+                            </div>
+                        </div>
+
+                        <div class="card-slot">
+                            <h3>Przydomek</h3>
+                            <div class="card-display" id="modifier1">
+                                <button class="btn-draw" onclick="drawModifier(1)">Losuj Przydomek</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kości -->
+                    <div class="dice-section">
+                        <h3>Rzuty Kośćmi</h3>
+                        <div class="dice-controls">
+                            <button class="btn-dice" onclick="rollDice(1, 4)">
+                                <span class="dice-icon">🎲</span> k4
+                            </button>
+                            <button class="btn-dice" onclick="rollDice(1, 6)">
+                                <span class="dice-icon">🎲</span> k6
+                            </button>
+                            <button class="btn-dice" onclick="rollDice(1, 8)">
+                                <span class="dice-icon">🎲</span> k8
+                            </button>
+                        </div>
+                        <div class="dice-result" id="diceResult1">
+                            <div class="result-display">-</div>
+                        </div>
+                        <div class="total-score">
+                            <strong>Suma:</strong> <span id="total1">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Fazy pojedynku -->
+                    <div class="phases-section">
+                        <h3>Fazy Pojedynku</h3>
+                        <div class="phase" data-phase="1">
+                            <div class="phase-header">Faza 1 - Rozpęd</div>
+                            <input type="number" class="phase-input" id="phase1_1" placeholder="0" min="0">
+                        </div>
+                        <div class="phase" data-phase="2">
+                            <div class="phase-header">Faza 2 - Skupienie</div>
+                            <input type="number" class="phase-input" id="phase2_1" placeholder="0" min="0">
+                        </div>
+                        <div class="phase" data-phase="3">
+                            <div class="phase-header">Faza 3 - Uderzenie</div>
+                            <input type="number" class="phase-input" id="phase3_1" placeholder="0" min="0">
+                        </div>
+                        <div class="phase" data-phase="4">
+                            <div class="phase-header">Faza 4 - Finalizacja</div>
+                            <input type="number" class="phase-input" id="phase4_1" placeholder="0" min="0">
+                        </div>
+                    </div>
+
+                    <!-- Przyciski akcji -->
+                    <div class="actions">
+                        <button class="btn btn-success" onclick="calculateTotal(1)">Oblicz Wynik</button>
+                        <button class="btn btn-glory" onclick="addGlory(1, 10)">+10 Chwały</button>
+                        <button class="btn btn-glory" onclick="addGlory(1, -10)">-10 Chwały</button>
+                    </div>
+                </div>
+
+                <!-- VS Separator -->
+                <div class="vs-separator">
+                    <div class="vs-circle">VS</div>
+                </div>
+
+                <!-- Gracz 2 -->
+                <div class="player-section" id="player2">
+                    <div class="player-header">
+                        <h2>Gracz 2</h2>
+                        <div class="glory-points">
+                            <span class="label">Punkty Chwały:</span>
+                            <span class="points" id="glory2">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Karty gracza 2 -->
+                    <div class="cards-section">
+                        <div class="card-slot">
+                            <h3>Rycerz</h3>
+                            <div class="card-display" id="knight2">
+                                <button class="btn-draw" onclick="drawKnight(2)">Losuj Rycerza</button>
+                            </div>
+                        </div>
+
+                        <div class="card-slot">
+                            <h3>Przydomek</h3>
+                            <div class="card-display" id="modifier2">
+                                <button class="btn-draw" onclick="drawModifier(2)">Losuj Przydomek</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kości -->
+                    <div class="dice-section">
+                        <h3>Rzuty Kośćmi</h3>
+                        <div class="dice-controls">
+                            <button class="btn-dice" onclick="rollDice(2, 4)">
+                                <span class="dice-icon">🎲</span> k4
+                            </button>
+                            <button class="btn-dice" onclick="rollDice(2, 6)">
+                                <span class="dice-icon">🎲</span> k6
+                            </button>
+                            <button class="btn-dice" onclick="rollDice(2, 8)">
+                                <span class="dice-icon">🎲</span> k8
+                            </button>
+                        </div>
+                        <div class="dice-result" id="diceResult2">
+                            <div class="result-display">-</div>
+                        </div>
+                        <div class="total-score">
+                            <strong>Suma:</strong> <span id="total2">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Fazy pojedynku -->
+                    <div class="phases-section">
+                        <h3>Fazy Pojedynku</h3>
+                        <div class="phase" data-phase="1">
+                            <div class="phase-header">Faza 1 - Rozpęd</div>
+                            <input type="number" class="phase-input" id="phase1_2" placeholder="0" min="0">
+                        </div>
+                        <div class="phase" data-phase="2">
+                            <div class="phase-header">Faza 2 - Skupienie</div>
+                            <input type="number" class="phase-input" id="phase2_2" placeholder="0" min="0">
+                        </div>
+                        <div class="phase" data-phase="3">
+                            <div class="phase-header">Faza 3 - Uderzenie</div>
+                            <input type="number" class="phase-input" id="phase3_2" placeholder="0" min="0">
+                        </div>
+                        <div class="phase" data-phase="4">
+                            <div class="phase-header">Faza 4 - Finalizacja</div>
+                            <input type="number" class="phase-input" id="phase4_2" placeholder="0" min="0">
+                        </div>
+                    </div>
+
+                    <!-- Przyciski akcji -->
+                    <div class="actions">
+                        <button class="btn btn-success" onclick="calculateTotal(2)">Oblicz Wynik</button>
+                        <button class="btn btn-glory" onclick="addGlory(2, 10)">+10 Chwały</button>
+                        <button class="btn btn-glory" onclick="addGlory(2, -10)">-10 Chwały</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historia rzutów -->
+            <div class="history-section">
+                <h3>Historia Gry</h3>
+                <div id="history" class="history-log"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Grand Tournament © 2025 | Have a great Grand Tournament!</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
