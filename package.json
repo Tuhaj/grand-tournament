@@ -2,6 +2,6 @@
   "name": "grand-tournament",
   "version": "1.0.0",
   "scripts": {
-    "build": "echo 'Static site - no build needed'"
+    "build": "mkdir -p dist && cp -r index.html app.js styles.css public dist/"
   }
 }
