@@ -61,6 +61,19 @@ const CARDS = [
     },
     {
         id: 4,
+        name: "Modlitwa Rycerza",
+        image: "public/img/cards/card-6.png",
+        type: "blessing",
+        effect: "Powtórz jeden rzut kości",
+        description: "Boskie wsparcie w krytycznym momencie",
+        bonus: { type: "reroll", value: 1 }
+    }
+];
+
+// Przedmioty/Artefakty - gracz wybiera które chce użyć
+const ITEMS = [
+    {
+        id: 1,
         name: "Precyzyjna Lanca",
         image: "public/img/cards/card-4.png",
         type: "weapon",
@@ -69,22 +82,13 @@ const CARDS = [
         bonus: { type: "phase", phase: 2, value: 5 }
     },
     {
-        id: 5,
+        id: 2,
         name: "Herb Rodu",
         image: "public/img/cards/card-5.png",
         type: "honor",
         effect: "+15 punktów chwały po zwycięstwie",
         description: "Honor rodziny motywuje do walki",
         bonus: { type: "glory", value: 15 }
-    },
-    {
-        id: 6,
-        name: "Modlitwa Rycerza",
-        image: "public/img/cards/card-6.png",
-        type: "blessing",
-        effect: "Powtórz jeden rzut kości",
-        description: "Boskie wsparcie w krytycznym momencie",
-        bonus: { type: "reroll", value: 1 }
     }
 ];
 
@@ -122,12 +126,15 @@ const MODIFIERS = [
 ];
 
 // Stan gry
+let currentPlayerForItems = 1; // Zmienna pomocnicza dla wyboru przedmiotów
+
 const gameState = {
     player1: {
         name: 'Gracz 1',
         knight: null,
         modifier: null,
         cards: [],
+        items: [],
         diceRolls: [],
         phases: [0, 0, 0, 0],
         gloryPoints: 0,
@@ -138,6 +145,7 @@ const gameState = {
         knight: null,
         modifier: null,
         cards: [],
+        items: [],
         diceRolls: [],
         phases: [0, 0, 0, 0],
         gloryPoints: 0,
@@ -426,6 +434,31 @@ function calculateTotal(player) {
     // Suma z faz
     let phaseSum = state.phases.reduce((sum, val) => sum + val, 0);
 
+    // Bonusy z kart
+    let cardsBonus = 0;
+    let cardsDiceBonus = 0;
+    state.cards.forEach(card => {
+        if (card.bonus.type === 'dice') {
+            cardsDiceBonus += card.bonus.value;
+        } else if (card.bonus.type === 'phase') {
+            cardsBonus += card.bonus.value;
+        }
+    });
+
+    // Bonusy z przedmiotów
+    let itemsBonus = 0;
+    let itemsDiceBonus = 0;
+    state.items.forEach(item => {
+        if (item.bonus.type === 'dice') {
+            itemsDiceBonus += item.bonus.value;
+        } else if (item.bonus.type === 'phase') {
+            itemsBonus += item.bonus.value;
+        }
+    });
+
+    // Dodaj bonusy do kości
+    diceSum += cardsDiceBonus + itemsDiceBonus;
+
     // Modyfikator z przydomka
     let modifierBonus = 0;
     if (state.modifier) {
@@ -438,12 +471,16 @@ function calculateTotal(player) {
         knightBonus = state.knight.strength + state.knight.accuracy + state.knight.agility;
     }
 
-    const totalScore = diceSum + phaseSum + modifierBonus + knightBonus;
+    const totalScore = diceSum + phaseSum + modifierBonus + knightBonus + cardsBonus + itemsBonus;
 
     // Wyświetl wynik
     document.getElementById(`total${player}`).textContent = totalScore;
 
-    addToHistory(`📊 ${gameState[`player${player}`].name} - Wynik całkowity: ${totalScore} (Kości: ${diceSum}, Fazy: ${phaseSum}, Modyfikator: ${modifierBonus}, Rycerz: ${knightBonus})`);
+    let bonusesText = '';
+    if (cardsBonus > 0 || cardsDiceBonus > 0) bonusesText += `, Karty: ${cardsBonus + cardsDiceBonus}`;
+    if (itemsBonus > 0 || itemsDiceBonus > 0) bonusesText += `, Przedmioty: ${itemsBonus + itemsDiceBonus}`;
+
+    addToHistory(`📊 ${gameState[`player${player}`].name} - Wynik całkowity: ${totalScore} (Kości: ${diceSum}, Fazy: ${phaseSum}, Modyfikator: ${modifierBonus}, Rycerz: ${knightBonus}${bonusesText})`);
 
     // Animacja
     const totalElement = document.getElementById(`total${player}`);
@@ -550,6 +587,7 @@ function resetGame() {
         knight: null,
         modifier: null,
         cards: [],
+        items: [],
         diceRolls: [],
         phases: [0, 0, 0, 0],
         gloryPoints: 0,
@@ -561,6 +599,7 @@ function resetGame() {
         knight: null,
         modifier: null,
         cards: [],
+        items: [],
         diceRolls: [],
         phases: [0, 0, 0, 0],
         gloryPoints: 0,
@@ -640,6 +679,69 @@ function showCards(player) {
     modal.show();
 }
 
+// Funkcja wyświetlania przedmiotów do wyboru
+function showItems(player) {
+    currentPlayerForItems = player;
+    const playerItems = gameState[`player${player}`].items;
+    const itemsList = document.getElementById('itemsList');
+
+    // Zbuduj listę przedmiotów
+    let itemsHTML = '';
+
+    ITEMS.forEach((item) => {
+        const isChecked = playerItems.some(pItem => pItem.id === item.id);
+
+        itemsHTML += `
+            <label class="list-group-item d-flex align-items-start">
+                <input class="form-check-input me-3 mt-1 flex-shrink-0" type="checkbox"
+                    value="${item.id}" ${isChecked ? 'checked' : ''}
+                    data-item='${JSON.stringify(item)}'>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <h6 class="mb-0">${item.name}</h6>
+                        <span class="badge bg-secondary ms-2">${item.type}</span>
+                    </div>
+                    <p class="text-success fw-bold mb-1 small">${item.effect}</p>
+                    <p class="text-muted mb-0 small">${item.description}</p>
+                </div>
+            </label>
+        `;
+    });
+
+    itemsList.innerHTML = itemsHTML;
+
+    // Zaktualizuj tytuł modala
+    document.getElementById('itemsModalLabel').innerHTML =
+        `<i class="bi bi-box-seam"></i> Wybierz Przedmioty - ${gameState[`player${player}`].name}`;
+
+    // Pokaż modal
+    const modal = new bootstrap.Modal(document.getElementById('itemsModal'));
+    modal.show();
+}
+
+// Funkcja zapisywania wybranych przedmiotów
+function saveSelectedItems() {
+    const checkboxes = document.querySelectorAll('#itemsList input[type="checkbox"]:checked');
+    const selectedItems = [];
+
+    checkboxes.forEach(checkbox => {
+        const itemData = JSON.parse(checkbox.dataset.item);
+        selectedItems.push(itemData);
+    });
+
+    gameState[`player${currentPlayerForItems}`].items = selectedItems;
+
+    const playerName = gameState[`player${currentPlayerForItems}`].name;
+    if (selectedItems.length > 0) {
+        const itemNames = selectedItems.map(item => item.name).join(', ');
+        addToHistory(`📦 ${playerName} wybrał przedmioty: ${itemNames}`);
+    } else {
+        addToHistory(`📦 ${playerName} usunął wszystkie przedmioty`);
+    }
+
+    saveGame();
+}
+
 // Eksport funkcji do globalnego scope (dla inline onclick)
 window.drawKnight = drawKnight;
 window.drawModifier = drawModifier;
@@ -647,6 +749,8 @@ window.rollDice = rollDice;
 window.calculateTotal = calculateTotal;
 window.addGlory = addGlory;
 window.showCards = showCards;
+window.showItems = showItems;
+window.saveSelectedItems = saveSelectedItems;
 window.clearDiceRolls = clearDiceRolls;
 window.editPlayerName = editPlayerName;
 

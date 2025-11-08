@@ -181,6 +181,9 @@
                             <button class="btn btn-info" onclick="showCards(1)">
                                 <i class="bi bi-collection"></i> Zobacz Karty
                             </button>
+                            <button class="btn btn-outline-secondary" onclick="showItems(1)">
+                                <i class="bi bi-box-seam"></i> Wybierz Przedmioty
+                            </button>
                             <button class="btn btn-success" onclick="calculateTotal(1)">
                                 <i class="bi bi-calculator"></i> Oblicz Wynik
                             </button>
@@ -310,6 +313,9 @@
                             <button class="btn btn-info" onclick="showCards(2)">
                                 <i class="bi bi-collection"></i> Zobacz Karty
                             </button>
+                            <button class="btn btn-outline-secondary" onclick="showItems(2)">
+                                <i class="bi bi-box-seam"></i> Wybierz Przedmioty
+                            </button>
                             <button class="btn btn-success" onclick="calculateTotal(2)">
                                 <i class="bi bi-calculator"></i> Oblicz Wynik
                             </button>
@@ -371,6 +377,32 @@
                             <span class="visually-hidden">Następna</span>
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Items Modal -->
+    <div class="modal fade" id="itemsModal" tabindex="-1" aria-labelledby="itemsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-secondary text-white">
+                    <h5 class="modal-title" id="itemsModalLabel">
+                        <i class="bi bi-box-seam"></i> Wybierz Przedmioty
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">Zaznacz przedmioty, które chcesz użyć w turnieju:</p>
+                    <div id="itemsList" class="list-group">
+                        <!-- Przedmioty będą wstawiane dynamicznie -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                    <button type="button" class="btn btn-primary" onclick="saveSelectedItems()" data-bs-dismiss="modal">
+                        <i class="bi bi-check-circle"></i> Zapisz Wybór
+                    </button>
                 </div>
             </div>
         </div>
