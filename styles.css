@@ -288,18 +288,39 @@
     filter: invert(1);
 }
 
-.carousel-indicators button {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #6c757d;
-    border: 2px solid #dee2e6;
-    text-indent: 0;
-    font-weight: bold;
-    margin: 0 5px;
+#cardsCarousel .carousel-indicators {
+    position: relative;
+    bottom: auto;
+    margin-top: 1rem;
+    margin-bottom: 0;
 }
 
-.carousel-indicators button.active {
+#cardsCarousel .carousel-indicators [data-bs-target] {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    border: 3px solid #dee2e6;
+    text-indent: 0;
+    font-weight: bold;
+    font-size: 1rem;
+    color: white;
+    margin: 0 8px;
+    opacity: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#cardsCarousel .carousel-indicators [data-bs-target]:hover {
+    transform: scale(1.1);
+    border-color: #0d6efd;
+}
+
+#cardsCarousel .carousel-indicators [data-bs-target].active {
     background-color: #0d6efd;
     border-color: #0d6efd;
+    transform: scale(1.15);
 }

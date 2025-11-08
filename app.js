@@ -155,8 +155,23 @@ function setupEventListeners() {
     document.getElementById('resetBtn').addEventListener('click', resetGame);
 }
 
+// Sprawdź czy gra została rozpoczęta
+function checkGameStarted() {
+    return gameState.player1.cards.length > 0 || gameState.player2.cards.length > 0;
+}
+
 // Losowanie rycerza
 function drawKnight(player) {
+    // Sprawdź czy gra została rozpoczęta
+    if (!checkGameStarted()) {
+        if (confirm('Najpierw musisz rozpocząć nową grę! Czy chcesz rozpocząć teraz?')) {
+            newGame();
+            // Po rozpoczęciu gry, kontynuuj losowanie
+        } else {
+            return;
+        }
+    }
+
     const faction = Math.random() > 0.5 ? 'freelancers' : 'imperials';
     const knights = KNIGHTS[faction];
     const knight = knights[Math.floor(Math.random() * knights.length)];
@@ -189,6 +204,16 @@ function displayKnight(player, knight, faction) {
 
 // Losowanie przydomka
 function drawModifier(player) {
+    // Sprawdź czy gra została rozpoczęta
+    if (!checkGameStarted()) {
+        if (confirm('Najpierw musisz rozpocząć nową grę! Czy chcesz rozpocząć teraz?')) {
+            newGame();
+            // Po rozpoczęciu gry, kontynuuj losowanie
+        } else {
+            return;
+        }
+    }
+
     const modifier = MODIFIERS[Math.floor(Math.random() * MODIFIERS.length)];
 
     gameState[`player${player}`].modifier = modifier;
