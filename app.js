@@ -34,39 +34,51 @@
 const CARDS = [
     {
         id: 1,
-        name: "Błogosławieństwo Trybun",
+        name: "Grubas jedzący kurczaki",
         image: "public/img/cards/card-1.png",
-        type: "support",
-        effect: "+3 do wszystkich rzutów kośćmi",
-        description: "Doping z trybun dodaje pewności siebie",
-        bonus: { type: "dice", value: 3 }
+        type: "character",
+        effect: "4x duplikacja postaci w grze",
+        bonus: { type: "special", value: 0 }
     },
     {
         id: 2,
-        name: "Zbroja Mistrza",
+        name: "Błazen",
         image: "public/img/cards/card-2.png",
-        type: "equipment",
-        effect: "+5 do obrony (faza 3)",
-        description: "Zbroja wykuta przez najlepszego kowala",
-        bonus: { type: "phase", phase: 3, value: 5 }
+        type: "character",
+        effect: "2x rzut k10",
+        bonus: { type: "dice_roll", dice: 10, count: 2 }
     },
     {
         id: 3,
-        name: "Szybki Koń",
+        name: "Chorąży",
         image: "public/img/cards/card-3.png",
-        type: "mount",
-        effect: "+4 do rozpędu (faza 1)",
-        description: "Rasowy wierzchowiec zwiększa prędkość",
-        bonus: { type: "phase", phase: 1, value: 4 }
+        type: "character",
+        effect: "Anuluj 2 pola przeciwnika",
+        bonus: { type: "special", value: 0 }
     },
     {
         id: 4,
-        name: "Modlitwa Rycerza",
+        name: "Szczurołap",
+        image: "public/img/cards/card-4.png",
+        type: "character",
+        effect: "8x rzut k4",
+        bonus: { type: "dice_roll", dice: 4, count: 8 }
+    },
+    {
+        id: 5,
+        name: "Bard",
+        image: "public/img/cards/card-5.png",
+        type: "character",
+        effect: "3x k4, 2x k6, 3x k8",
+        bonus: { type: "special", value: 0 }
+    },
+    {
+        id: 6,
+        name: "Ochroniarz",
         image: "public/img/cards/card-6.png",
-        type: "blessing",
-        effect: "Powtórz jeden rzut kości",
-        description: "Boskie wsparcie w krytycznym momencie",
-        bonus: { type: "reroll", value: 1 }
+        type: "character",
+        effect: "Podwójna wartość w środkowym polu",
+        bonus: { type: "special", value: 0 }
     }
 ];
 
@@ -74,20 +86,44 @@ const CARDS = [
 const ITEMS = [
     {
         id: 1,
-        name: "Precyzyjna Lanca",
-        image: "public/img/cards/card-4.png",
-        type: "weapon",
-        effect: "+5 do celności (faza 2)",
-        description: "Idealnie wyważona broń turniejowa",
-        bonus: { type: "phase", phase: 2, value: 5 }
+        name: "Błogosławieństwo Trybun",
+        type: "support",
+        effect: "+3 do wszystkich rzutów kośćmi",
+        bonus: { type: "dice", value: 3 }
     },
     {
         id: 2,
+        name: "Zbroja Mistrza",
+        type: "equipment",
+        effect: "+5 do obrony (faza 3)",
+        bonus: { type: "phase", phase: 3, value: 5 }
+    },
+    {
+        id: 3,
+        name: "Szybki Koń",
+        type: "mount",
+        effect: "+4 do rozpędu (faza 1)",
+        bonus: { type: "phase", phase: 1, value: 4 }
+    },
+    {
+        id: 4,
+        name: "Modlitwa Rycerza",
+        type: "blessing",
+        effect: "Powtórz jeden rzut kości",
+        bonus: { type: "reroll", value: 1 }
+    },
+    {
+        id: 5,
+        name: "Precyzyjna Lanca",
+        type: "weapon",
+        effect: "+5 do celności (faza 2)",
+        bonus: { type: "phase", phase: 2, value: 5 }
+    },
+    {
+        id: 6,
         name: "Herb Rodu",
-        image: "public/img/cards/card-5.png",
         type: "honor",
         effect: "+15 punktów chwały po zwycięstwie",
-        description: "Honor rodziny motywuje do walki",
         bonus: { type: "glory", value: 15 }
     }
 ];
