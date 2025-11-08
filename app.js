@@ -124,6 +124,7 @@ const MODIFIERS = [
 // Stan gry
 const gameState = {
     player1: {
+        name: 'Gracz 1',
         knight: null,
         modifier: null,
         cards: [],
@@ -133,6 +134,7 @@ const gameState = {
         total: 0
     },
     player2: {
+        name: 'Gracz 2',
         knight: null,
         modifier: null,
         cards: [],
@@ -199,6 +201,9 @@ function restoreUI() {
         // Restore glory points
         document.getElementById(`glory${player}`).textContent = playerState.gloryPoints;
 
+        // Restore player name
+        updatePlayerName(player);
+
         // Update mobile score
         updateMobileScore();
     }
@@ -206,6 +211,35 @@ function restoreUI() {
 
 function clearSavedGame() {
     localStorage.removeItem('grandTournamentState');
+}
+
+// Edit player name
+function editPlayerName(player) {
+    const currentName = gameState[`player${player}`].name;
+    const newName = prompt(`Zmień nazwę gracza:`, currentName);
+
+    if (newName && newName.trim() !== '') {
+        gameState[`player${player}`].name = newName.trim();
+        updatePlayerName(player);
+        updateMobileScore();
+        saveGame();
+        addToHistory(`✏️ Gracz ${player} zmienił nazwę na: ${newName.trim()}`);
+    }
+}
+
+// Update player name in UI
+function updatePlayerName(player) {
+    const playerName = gameState[`player${player}`].name;
+    const nameElement = document.getElementById(`playerName${player}`);
+    const mobileNameElement = document.getElementById(`mobileName${player}`);
+
+    if (nameElement) {
+        nameElement.textContent = playerName;
+    }
+
+    if (mobileNameElement) {
+        mobileNameElement.innerHTML = `<i class="bi bi-person-fill"></i> ${playerName}`;
+    }
 }
 
 // Update mobile score display
@@ -276,7 +310,7 @@ function drawKnight(player) {
     gameState[`player${player}`].knight = { ...knight, faction };
 
     displayKnight(player, knight, faction);
-    addToHistory(`⚔️ Gracz ${player} wylosował: ${knight.name} (${faction === 'freelancers' ? 'Błędny Rycerz' : 'Imperialny'})`);
+    addToHistory(`⚔️ ${gameState[`player${player}`].name} wylosował: ${knight.name} (${faction === 'freelancers' ? 'Błędny Rycerz' : 'Imperialny'})`);
     saveGame();
 }
 
@@ -317,7 +351,7 @@ function drawModifier(player) {
     gameState[`player${player}`].modifier = modifier;
 
     displayModifier(player, modifier);
-    addToHistory(`🎭 Gracz ${player} otrzymał przydomek: ${modifier.name} (${modifier.effect})`);
+    addToHistory(`🎭 ${gameState[`player${player}`].name} otrzymał przydomek: ${modifier.name} (${modifier.effect})`);
     saveGame();
 }
 
@@ -343,7 +377,7 @@ function rollDice(player, sides) {
     gameState[`player${player}`].diceRolls.push({ sides, value: roll });
 
     displayDiceRoll(player);
-    addToHistory(`🎲 Gracz ${player} rzucił k${sides}: wynik ${roll}`);
+    addToHistory(`🎲 ${gameState[`player${player}`].name} rzucił k${sides}: wynik ${roll}`);
 
     // Animacja
     const resultContainer = document.getElementById(`diceResult${player}`);
@@ -409,7 +443,7 @@ function calculateTotal(player) {
     // Wyświetl wynik
     document.getElementById(`total${player}`).textContent = totalScore;
 
-    addToHistory(`📊 Gracz ${player} - Wynik całkowity: ${totalScore} (Kości: ${diceSum}, Fazy: ${phaseSum}, Modyfikator: ${modifierBonus}, Rycerz: ${knightBonus})`);
+    addToHistory(`📊 ${gameState[`player${player}`].name} - Wynik całkowity: ${totalScore} (Kości: ${diceSum}, Fazy: ${phaseSum}, Modyfikator: ${modifierBonus}, Rycerz: ${knightBonus})`);
 
     // Animacja
     const totalElement = document.getElementById(`total${player}`);
@@ -432,7 +466,7 @@ function addGlory(player, amount) {
     setTimeout(() => gloryElement.classList.remove('pulse'), 500);
 
     const action = amount > 0 ? 'zdobył' : 'stracił';
-    addToHistory(`⭐ Gracz ${player} ${action} ${Math.abs(amount)} punktów chwały! Razem: ${gameState[`player${player}`].gloryPoints}`);
+    addToHistory(`⭐ ${gameState[`player${player}`].name} ${action} ${Math.abs(amount)} punktów chwały! Razem: ${gameState[`player${player}`].gloryPoints}`);
 
     updateMobileScore();
     saveGame();
@@ -507,8 +541,12 @@ function newGame() {
 
 // Reset gry
 function resetGame() {
-    // Reset stanu
+    // Reset stanu (zachowujemy nazwy graczy)
+    const player1Name = gameState.player1.name;
+    const player2Name = gameState.player2.name;
+
     gameState.player1 = {
+        name: player1Name,
         knight: null,
         modifier: null,
         cards: [],
@@ -519,6 +557,7 @@ function resetGame() {
     };
 
     gameState.player2 = {
+        name: player2Name,
         knight: null,
         modifier: null,
         cards: [],
@@ -594,7 +633,7 @@ function showCards(player) {
 
     // Zaktualizuj tytuł modala
     document.getElementById('cardsModalLabel').innerHTML =
-        `<i class="bi bi-collection"></i> Karty Gracza ${player} (${cards.length})`;
+        `<i class="bi bi-collection"></i> Karty: ${gameState[`player${player}`].name} (${cards.length})`;
 
     // Pokaż modal
     const modal = new bootstrap.Modal(document.getElementById('cardsModal'));
@@ -609,12 +648,13 @@ window.calculateTotal = calculateTotal;
 window.addGlory = addGlory;
 window.showCards = showCards;
 window.clearDiceRolls = clearDiceRolls;
+window.editPlayerName = editPlayerName;
 
 // Dodatkowe funkcje pomocnicze
 function clearDiceRolls(player) {
     gameState[`player${player}`].diceRolls = [];
     displayDiceRoll(player);
-    addToHistory(`🗑️ Gracz ${player} wyczyścił rzuty kośćmi`);
+    addToHistory(`🗑️ ${gameState[`player${player}`].name} wyczyścił rzuty kośćmi`);
     saveGame();
 }
 
