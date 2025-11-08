@@ -30,6 +30,64 @@
     }, 2500);
 })();
 
+// Karty do gry - każdy gracz dostaje losowe karty na początku gry
+const CARDS = [
+    {
+        id: 1,
+        name: "Błogosławieństwo Trybun",
+        image: "public/img/cards/card-1.png",
+        type: "support",
+        effect: "+3 do wszystkich rzutów kośćmi",
+        description: "Doping z trybun dodaje pewności siebie",
+        bonus: { type: "dice", value: 3 }
+    },
+    {
+        id: 2,
+        name: "Zbroja Mistrza",
+        image: "public/img/cards/card-2.png",
+        type: "equipment",
+        effect: "+5 do obrony (faza 3)",
+        description: "Zbroja wykuta przez najlepszego kowala",
+        bonus: { type: "phase", phase: 3, value: 5 }
+    },
+    {
+        id: 3,
+        name: "Szybki Koń",
+        image: "public/img/cards/card-3.png",
+        type: "mount",
+        effect: "+4 do rozpędu (faza 1)",
+        description: "Rasowy wierzchowiec zwiększa prędkość",
+        bonus: { type: "phase", phase: 1, value: 4 }
+    },
+    {
+        id: 4,
+        name: "Precyzyjna Lanca",
+        image: "public/img/cards/card-4.png",
+        type: "weapon",
+        effect: "+5 do celności (faza 2)",
+        description: "Idealnie wyważona broń turniejowa",
+        bonus: { type: "phase", phase: 2, value: 5 }
+    },
+    {
+        id: 5,
+        name: "Herb Rodu",
+        image: "public/img/cards/card-5.png",
+        type: "honor",
+        effect: "+15 punktów chwały po zwycięstwie",
+        description: "Honor rodziny motywuje do walki",
+        bonus: { type: "glory", value: 15 }
+    },
+    {
+        id: 6,
+        name: "Modlitwa Rycerza",
+        image: "public/img/cards/card-6.png",
+        type: "blessing",
+        effect: "Powtórz jeden rzut kości",
+        description: "Boskie wsparcie w krytycznym momencie",
+        bonus: { type: "reroll", value: 1 }
+    }
+];
+
 // Dane gry
 const KNIGHTS = {
     freelancers: [
@@ -68,6 +126,7 @@ const gameState = {
     player1: {
         knight: null,
         modifier: null,
+        cards: [],
         diceRolls: [],
         phases: [0, 0, 0, 0],
         gloryPoints: 0,
@@ -76,6 +135,7 @@ const gameState = {
     player2: {
         knight: null,
         modifier: null,
+        cards: [],
         diceRolls: [],
         phases: [0, 0, 0, 0],
         gloryPoints: 0,
@@ -282,11 +342,32 @@ function updateHistoryDisplay() {
     historyContainer.innerHTML = html;
 }
 
+// Losowanie unikalnych kart
+function drawRandomCards(count) {
+    const availableCards = [...CARDS];
+    const drawnCards = [];
+
+    for (let i = 0; i < count && availableCards.length > 0; i++) {
+        const randomIndex = Math.floor(Math.random() * availableCards.length);
+        drawnCards.push(availableCards[randomIndex]);
+        availableCards.splice(randomIndex, 1);
+    }
+
+    return drawnCards;
+}
+
 // Nowa gra
 function newGame() {
     if (confirm('Czy na pewno chcesz rozpocząć nową grę? Obecny postęp zostanie utracony.')) {
         resetGame();
+
+        // Rozdaj karty graczom
+        gameState.player1.cards = drawRandomCards(3);
+        gameState.player2.cards = drawRandomCards(3);
+
         addToHistory('🎮 Rozpoczęto nową grę!');
+        addToHistory(`🃏 Gracz 1 otrzymał ${gameState.player1.cards.length} kart`);
+        addToHistory(`🃏 Gracz 2 otrzymał ${gameState.player2.cards.length} kart`);
     }
 }
 
@@ -296,6 +377,7 @@ function resetGame() {
     gameState.player1 = {
         knight: null,
         modifier: null,
+        cards: [],
         diceRolls: [],
         phases: [0, 0, 0, 0],
         gloryPoints: 0,
@@ -305,6 +387,7 @@ function resetGame() {
     gameState.player2 = {
         knight: null,
         modifier: null,
+        cards: [],
         diceRolls: [],
         phases: [0, 0, 0, 0],
         gloryPoints: 0,
@@ -333,12 +416,64 @@ function resetGame() {
     addToHistory('🔄 Gra zresetowana');
 }
 
+// Wyświetl karty gracza w karuzeli
+function showCards(player) {
+    const cards = gameState[`player${player}`].cards;
+
+    if (cards.length === 0) {
+        alert('Najpierw rozpocznij nową grę, aby otrzymać karty!');
+        return;
+    }
+
+    const carouselContent = document.getElementById('carouselContent');
+    const carouselIndicators = document.getElementById('carouselIndicators');
+
+    // Zbuduj karuzele
+    let carouselHTML = '';
+    let indicatorsHTML = '';
+
+    cards.forEach((card, index) => {
+        const activeClass = index === 0 ? 'active' : '';
+
+        carouselHTML += `
+            <div class="carousel-item ${activeClass}">
+                <div class="card-carousel-content text-center p-4">
+                    <img src="${card.image}" class="d-block w-100 mb-3" alt="${card.name}" style="max-height: 400px; object-fit: contain;">
+                    <h4 class="card-title mb-2">${card.name}</h4>
+                    <p class="badge bg-secondary mb-2">${card.type}</p>
+                    <p class="text-success fw-bold fs-5">${card.effect}</p>
+                    <p class="text-muted">${card.description}</p>
+                </div>
+            </div>
+        `;
+
+        indicatorsHTML += `
+            <button type="button" data-bs-target="#cardsCarousel" data-bs-slide-to="${index}"
+                class="${activeClass}" aria-label="Karta ${index + 1}">
+                ${index + 1}
+            </button>
+        `;
+    });
+
+    carouselContent.innerHTML = carouselHTML;
+    carouselIndicators.innerHTML = indicatorsHTML;
+
+    // Zaktualizuj tytuł modala
+    document.getElementById('cardsModalLabel').innerHTML =
+        `<i class="bi bi-collection"></i> Karty Gracza ${player} (${cards.length})`;
+
+    // Pokaż modal
+    const modal = new bootstrap.Modal(document.getElementById('cardsModal'));
+    modal.show();
+}
+
 // Eksport funkcji do globalnego scope (dla inline onclick)
 window.drawKnight = drawKnight;
 window.drawModifier = drawModifier;
 window.rollDice = rollDice;
 window.calculateTotal = calculateTotal;
 window.addGlory = addGlory;
+window.showCards = showCards;
 
 // Dodatkowe funkcje pomocnicze
 function clearDiceRolls(player) {
