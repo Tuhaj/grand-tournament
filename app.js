@@ -16,7 +16,21 @@
         splashImageElement.src = randomImage;
     }
 
-    // Ukryj splash screen po 2.5 sekundach
+    // Odtwórz muzykę turnieju
+    const audio = new Audio('public/Tournament_of_Knights_2025-11-09T092055.mp3');
+    audio.volume = 0.5; // Ustaw głośność na 50%
+
+    // Rozpocznij odtwarzanie (wymaga interakcji użytkownika w niektórych przeglądarkach)
+    audio.play().catch(error => {
+        console.log('Autoplay został zablokowany przez przeglądarkę:', error);
+        // Spróbuj odtworzyć po kliknięciu w dokument
+        document.addEventListener('click', function playOnClick() {
+            audio.play();
+            document.removeEventListener('click', playOnClick);
+        }, { once: true });
+    });
+
+    // Ukryj splash screen po 8 sekundach (dłużej, aby pozwolić muzykę się rozkręcić)
     setTimeout(() => {
         const splashScreen = document.getElementById('splashScreen');
         if (splashScreen) {
@@ -27,7 +41,7 @@
                 splashScreen.remove();
             }, 500);
         }
-    }, 2500);
+    }, 8000);
 })();
 
 // Karty do gry - każdy gracz dostaje losowe karty na początku gry
