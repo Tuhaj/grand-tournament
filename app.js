@@ -79,6 +79,70 @@ const CARDS = [
         type: "character",
         effect: "Podwójna wartość w środkowym polu",
         bonus: { type: "special", value: 0 }
+    },
+    {
+        id: 7,
+        name: "Malarz",
+        image: "public/img/cards/card-7.png",
+        type: "character",
+        effect: "+10 dodatkowych punktów chwały, przy przegranej -10",
+        bonus: { type: "glory", win: 10, lose: -10 }
+    },
+    {
+        id: 8,
+        name: "Laluś",
+        image: "public/img/cards/card-8.png",
+        type: "character",
+        effect: "-10 do danej fazy dla rycerza damskiego, rozprasza rycerza",
+        bonus: { type: "phase_penalty", value: -10 }
+    },
+    {
+        id: 9,
+        name: "Mnich",
+        image: "public/img/cards/card-9.png",
+        type: "character",
+        effect: "Powtarzasz rzut z obrone (k20), jeżeli jesteś Pobożny → x2",
+        bonus: { type: "reroll", dice: 20, condition: "Pobożny" }
+    },
+    {
+        id: 10,
+        name: "Zakonnica",
+        image: "public/img/cards/card-10.png",
+        type: "character",
+        effect: "Powtarzasz rzut z rozpędzenie konia (k20), jeżeli jesteś Pobożny → x2",
+        bonus: { type: "reroll", dice: 20, condition: "Pobożny" }
+    },
+    {
+        id: 11,
+        name: "Facet jedzący jabłko",
+        image: "public/img/cards/card-11.png",
+        type: "character",
+        effect: "Minus do czego? Rzuca jabłkiem w rycerza. Rząd 1: -10, Rząd 2: -5, Rząd 3: -1",
+        bonus: { type: "row_penalty", row1: -10, row2: -5, row3: -1 }
+    },
+    {
+        id: 12,
+        name: "Wiedźma",
+        image: "public/img/cards/card-12.png",
+        type: "character",
+        effect: "Powtarzasz nawet najlepszy rzut, kontra do duchownych",
+        bonus: { type: "reroll_best", counter: "clergy" }
+    },
+    {
+        id: 13,
+        name: "Cycata kobieta / Lokalna piękność",
+        image: "public/img/cards/card-13.png",
+        type: "character",
+        effect: "-10 do danej fazy dla rycerza męskiego, rozprasza rycerza",
+        bonus: { type: "phase_penalty", value: -10 }
+    },
+    {
+        id: 14,
+        name: "Mistrz rycerski (Mentor)",
+        image: "public/img/cards/card-14.png",
+        type: "character",
+        effect: "+10 do danej fazy dla rycerza, motywuje rycerza",
+        bonus: { type: "phase_bonus", value: 10 }
     }
 ];
 
