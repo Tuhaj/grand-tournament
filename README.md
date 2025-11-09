@@ -97,6 +97,75 @@ Gra działa w przeglądarce i oferuje:
 - Automatyczne obliczanie wyników gry
 - Interaktywną rozgrywkę
 
+### Stack technologiczny
+- **Vanilla JavaScript** (ES6+) - czysta logika gry bez frameworków
+- **HTML5 + CSS3** - responsywny interfejs
+- **Bootstrap 5.3.0** - komponenty UI i system gridowy
+- **LocalStorage** - automatyczny zapis stanu gry
+
+### Funkcje aplikacji
+- **Automatyczny zapis** - gra zapisuje się po każdej akcji
+- **System kości** - 6 typów kości (k4, k6, k8, k10, k12, k20)
+- **Historia rozgrywki** - pełny log wszystkich akcji
+- **Responsywność** - działa na desktopie i urządzeniach mobilnych
+- **Punkty chwały** - system meta-waluty do strategicznych decyzji
+
+## Jak uruchomić
+
+### Metoda 1: Bezpośrednio w przeglądarce
+Otwórz plik `index.html` w przeglądarce.
+
+### Metoda 2: Lokalny serwer (zalecane)
+```bash
+# Python 3
+python3 -m http.server 8000
+
+# Lub npx
+npx http-server -p 8000
+```
+
+Następnie otwórz: http://localhost:8000
+
+### Deployment
+Projekt jest skonfigurowany do automatycznego deploymentu na Vercel:
+```bash
+npm run build  # Buduje wersję produkcyjną do folderu dist/
+```
+
+## Dokumentacja
+
+- **DESIGN_GUIDELINES.md** - Szczegółowy system projektowania wizualnego
+- **INSTRUKCJA.md** - Instrukcja użytkownika i rozwiązywanie problemów
+- **CLAUDE.md** - Dokumentacja techniczna dla programistów
+
+## Dane gry
+
+### Rycerze
+- **Błędni Rycerze (Freelancerzy):** 5 rycerzy z kolorowymi zbrojami
+- **Imperialni Rycerze (Elita):** 5 rycerzy w czarnych zbrojach
+- Każdy rycerz ma unikalne statystyki: Siła, Celność, Zręczność
+
+### Przydomki
+12 unikalnych przydomków wpływających na różne fazy pojedynku:
+- Gniewny, Jednooki, Złotoręki, Jurny, Wytrwały
+- Nieznany, Niezłomny, Pobożny, Piękny i inne
+
+### Karty wsparcia
+4 karty specjalne rozdawane losowo (3 na gracza):
+- Wsparcie, Ekwipunek, Wierzchowiec, Błogosławieństwo
+
+### Przedmioty
+2 przedmioty/artefakty do wybrania przez graczy
+
+## Fazy pojedynku
+
+1. **Faza 1 - Rozpęd:** Siła i momentum ataku
+2. **Faza 2 - Skupienie:** Celność i precyzja
+3. **Faza 3 - Uderzenie:** Główny atak
+4. **Faza 4 - Finalizacja:** Zakończenie i efekty końcowe
+
+Wynik = Rzuty kośćmi + Bonusy z faz + Modyfikatory + Statystyki rycerza + Karty + Przedmioty
+
 ---
 
 **Have a great Grand Tournament!**
