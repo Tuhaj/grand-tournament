@@ -17,18 +17,17 @@
     }
 
     // Odtwórz muzykę turnieju
-    const audio = new Audio('public/Tournament_of_Knights_2025-11-09T092055.mp3');
-    audio.volume = 0.5; // Ustaw głośność na 50%
+    const audio = document.getElementById('backgroundMusic');
+    if (audio) {
+        audio.volume = 0.5; // Ustaw głośność na 50%
 
-    // Rozpocznij odtwarzanie (wymaga interakcji użytkownika w niektórych przeglądarkach)
-    audio.play().catch(error => {
-        console.log('Autoplay został zablokowany przez przeglądarkę:', error);
-        // Spróbuj odtworzyć po kliknięciu w dokument
-        document.addEventListener('click', function playOnClick() {
-            audio.play();
-            document.removeEventListener('click', playOnClick);
-        }, { once: true });
-    });
+        // Rozpocznij odtwarzanie (wymaga interakcji użytkownika w niektórych przeglądarkach)
+        audio.play().catch(error => {
+            console.log('Autoplay został zablokowany przez przeglądarkę:', error);
+            // Ikona przycisku wskaże, że muzyka jest zatrzymana
+            updateMusicButton(false);
+        });
+    }
 
     // Ukryj splash screen po 8 sekundach (dłużej, aby pozwolić muzykę się rozkręcić)
     setTimeout(() => {
@@ -983,5 +982,39 @@ document.addEventListener('keydown', (e) => {
         calculateTotal(1);
     }
 });
+
+// === MUSIC CONTROL ===
+function toggleMusic() {
+    const audio = document.getElementById('backgroundMusic');
+    if (!audio) return;
+
+    if (audio.paused) {
+        audio.play().then(() => {
+            updateMusicButton(true);
+        }).catch(error => {
+            console.log('Nie można odtworzyć muzyki:', error);
+        });
+    } else {
+        audio.pause();
+        updateMusicButton(false);
+    }
+}
+
+function updateMusicButton(isPlaying) {
+    const button = document.getElementById('musicToggle');
+    if (!button) return;
+
+    const icon = button.querySelector('i');
+    if (isPlaying) {
+        icon.className = 'bi bi-volume-up-fill';
+        button.title = 'Zatrzymaj muzykę';
+    } else {
+        icon.className = 'bi bi-volume-mute-fill';
+        button.title = 'Odtwórz muzykę';
+    }
+}
+
+// Eksportuj funkcje do window
+window.toggleMusic = toggleMusic;
 
 console.log('🏰 Grand Tournament loaded! Have a great game!');
