@@ -34,39 +34,51 @@
 const CARDS = [
     {
         id: 1,
-        name: "Błogosławieństwo Trybun",
+        name: "Grubas jedzący kurczaki",
         image: "public/img/cards/card-1.png",
-        type: "support",
-        effect: "+3 do wszystkich rzutów kośćmi",
-        description: "Doping z trybun dodaje pewności siebie",
-        bonus: { type: "dice", value: 3 }
+        type: "character",
+        effect: "4x duplikacja postaci w grze",
+        bonus: { type: "special", value: 0 }
     },
     {
         id: 2,
-        name: "Zbroja Mistrza",
+        name: "Błazen",
         image: "public/img/cards/card-2.png",
-        type: "equipment",
-        effect: "+5 do obrony (faza 3)",
-        description: "Zbroja wykuta przez najlepszego kowala",
-        bonus: { type: "phase", phase: 3, value: 5 }
+        type: "character",
+        effect: "2x rzut k10",
+        bonus: { type: "dice_roll", dice: 10, count: 2 }
     },
     {
         id: 3,
-        name: "Szybki Koń",
+        name: "Chorąży",
         image: "public/img/cards/card-3.png",
-        type: "mount",
-        effect: "+4 do rozpędu (faza 1)",
-        description: "Rasowy wierzchowiec zwiększa prędkość",
-        bonus: { type: "phase", phase: 1, value: 4 }
+        type: "character",
+        effect: "Anuluj 2 pola przeciwnika",
+        bonus: { type: "special", value: 0 }
     },
     {
         id: 4,
-        name: "Modlitwa Rycerza",
+        name: "Szczurołap",
+        image: "public/img/cards/card-4.png",
+        type: "character",
+        effect: "8x rzut k4",
+        bonus: { type: "dice_roll", dice: 4, count: 8 }
+    },
+    {
+        id: 5,
+        name: "Bard",
+        image: "public/img/cards/card-5.png",
+        type: "character",
+        effect: "3x k4, 2x k6, 3x k8",
+        bonus: { type: "special", value: 0 }
+    },
+    {
+        id: 6,
+        name: "Ochroniarz",
         image: "public/img/cards/card-6.png",
-        type: "blessing",
-        effect: "Powtórz jeden rzut kości",
-        description: "Boskie wsparcie w krytycznym momencie",
-        bonus: { type: "reroll", value: 1 }
+        type: "character",
+        effect: "Podwójna wartość w środkowym polu",
+        bonus: { type: "special", value: 0 }
     }
 ];
 
@@ -74,20 +86,44 @@ const CARDS = [
 const ITEMS = [
     {
         id: 1,
-        name: "Precyzyjna Lanca",
-        image: "public/img/cards/card-4.png",
-        type: "weapon",
-        effect: "+5 do celności (faza 2)",
-        description: "Idealnie wyważona broń turniejowa",
-        bonus: { type: "phase", phase: 2, value: 5 }
+        name: "Błogosławieństwo Trybun",
+        type: "support",
+        effect: "+3 do wszystkich rzutów kośćmi",
+        bonus: { type: "dice", value: 3 }
     },
     {
         id: 2,
+        name: "Zbroja Mistrza",
+        type: "equipment",
+        effect: "+5 do obrony (faza 3)",
+        bonus: { type: "phase", phase: 3, value: 5 }
+    },
+    {
+        id: 3,
+        name: "Szybki Koń",
+        type: "mount",
+        effect: "+4 do rozpędu (faza 1)",
+        bonus: { type: "phase", phase: 1, value: 4 }
+    },
+    {
+        id: 4,
+        name: "Modlitwa Rycerza",
+        type: "blessing",
+        effect: "Powtórz jeden rzut kości",
+        bonus: { type: "reroll", value: 1 }
+    },
+    {
+        id: 5,
+        name: "Precyzyjna Lanca",
+        type: "weapon",
+        effect: "+5 do celności (faza 2)",
+        bonus: { type: "phase", phase: 2, value: 5 }
+    },
+    {
+        id: 6,
         name: "Herb Rodu",
-        image: "public/img/cards/card-5.png",
         type: "honor",
         effect: "+15 punktów chwały po zwycięstwie",
-        description: "Honor rodziny motywuje do walki",
         bonus: { type: "glory", value: 15 }
     }
 ];
@@ -751,6 +787,7 @@ window.showItems = showItems;
 window.saveSelectedItems = saveSelectedItems;
 window.clearDiceRolls = clearDiceRolls;
 window.editPlayerName = editPlayerName;
+window.showModifiersSummary = showModifiersSummary;
 
 // Dodatkowe funkcje pomocnicze
 function clearDiceRolls(player) {
@@ -758,6 +795,100 @@ function clearDiceRolls(player) {
     displayDiceRoll(player);
     addToHistory(`🗑️ ${gameState[`player${player}`].name} wyczyścił rzuty kośćmi`);
     saveGame();
+}
+
+// Funkcja wyświetlająca wszystkie aktywne modyfikatory gracza
+function showModifiersSummary(player) {
+    const state = gameState[`player${player}`];
+    const playerName = state.name;
+
+    let summary = `<div class="modifiers-summary">`;
+    summary += `<h5 class="mb-3"><i class="bi bi-calculator-fill"></i> Podsumowanie modyfikatorów - ${playerName}</h5>`;
+
+    // Rycerz
+    if (state.knight) {
+        summary += `<div class="modifier-section mb-3">`;
+        summary += `<h6 class="text-primary"><i class="bi bi-shield"></i> Rycerz: ${state.knight.name}</h6>`;
+        summary += `<ul class="list-unstyled ms-3">`;
+        summary += `<li>Siła: +${state.knight.strength}</li>`;
+        summary += `<li>Celność: +${state.knight.accuracy}</li>`;
+        summary += `<li>Zręczność: +${state.knight.agility}</li>`;
+        summary += `<li class="fw-bold text-success">Suma: +${state.knight.strength + state.knight.accuracy + state.knight.agility}</li>`;
+        summary += `</ul></div>`;
+    } else {
+        summary += `<p class="text-muted">Brak wylosowanego rycerza</p>`;
+    }
+
+    // Przydomek
+    if (state.modifier) {
+        summary += `<div class="modifier-section mb-3">`;
+        summary += `<h6 class="text-warning"><i class="bi bi-star"></i> Przydomek: ${state.modifier.name}</h6>`;
+        summary += `<p class="ms-3 mb-0">${state.modifier.effect}</p>`;
+        if (state.modifier.value !== 0) {
+            const sign = state.modifier.value > 0 ? '+' : '';
+            summary += `<p class="ms-3 fw-bold ${state.modifier.value > 0 ? 'text-success' : 'text-danger'}">${sign}${state.modifier.value}</p>`;
+        }
+        summary += `</div>`;
+    } else {
+        summary += `<p class="text-muted">Brak przydomka</p>`;
+    }
+
+    // Karty
+    if (state.cards.length > 0) {
+        summary += `<div class="modifier-section mb-3">`;
+        summary += `<h6 class="text-info"><i class="bi bi-collection"></i> Karty (${state.cards.length})</h6>`;
+        summary += `<ul class="list-unstyled ms-3">`;
+        state.cards.forEach(card => {
+            summary += `<li><strong>${card.name}:</strong> ${card.effect}</li>`;
+        });
+        summary += `</ul></div>`;
+    }
+
+    // Przedmioty
+    if (state.items.length > 0) {
+        summary += `<div class="modifier-section mb-3">`;
+        summary += `<h6 class="text-secondary"><i class="bi bi-box-seam"></i> Przedmioty (${state.items.length})</h6>`;
+        summary += `<ul class="list-unstyled ms-3">`;
+
+        let totalItemsBonus = 0;
+        state.items.forEach(item => {
+            summary += `<li><strong>${item.name}:</strong> ${item.effect}</li>`;
+            if (item.bonus.type === 'dice' || item.bonus.type === 'phase') {
+                totalItemsBonus += item.bonus.value || 0;
+            }
+        });
+
+        if (totalItemsBonus > 0) {
+            summary += `<li class="fw-bold text-success mt-2">Łączny bonus: +${totalItemsBonus}</li>`;
+        }
+        summary += `</ul></div>`;
+    }
+
+    // Fazy
+    const phasesSum = state.phases.reduce((sum, val) => sum + val, 0);
+    if (phasesSum > 0) {
+        summary += `<div class="modifier-section mb-3">`;
+        summary += `<h6 class="text-dark"><i class="bi bi-list-ol"></i> Fazy pojedynku</h6>`;
+        summary += `<ul class="list-unstyled ms-3">`;
+        if (state.phases[0] > 0) summary += `<li>Faza 1 (Rozpęd): +${state.phases[0]}</li>`;
+        if (state.phases[1] > 0) summary += `<li>Faza 2 (Skupienie): +${state.phases[1]}</li>`;
+        if (state.phases[2] > 0) summary += `<li>Faza 3 (Uderzenie): +${state.phases[2]}</li>`;
+        if (state.phases[3] > 0) summary += `<li>Faza 4 (Finalizacja): +${state.phases[3]}</li>`;
+        summary += `<li class="fw-bold text-success mt-2">Suma faz: +${phasesSum}</li>`;
+        summary += `</ul></div>`;
+    }
+
+    summary += `</div>`;
+
+    // Wyświetl w modalu
+    const modalBody = document.querySelector('#modifiersSummaryModal .modal-body');
+    const modalLabel = document.getElementById('modifiersSummaryLabel');
+
+    modalLabel.innerHTML = `<i class="bi bi-calculator-fill"></i> Modyfikatory - ${playerName}`;
+    modalBody.innerHTML = summary;
+
+    const modal = new bootstrap.Modal(document.getElementById('modifiersSummaryModal'));
+    modal.show();
 }
 
 // Skróty klawiszowe (opcjonalne)
