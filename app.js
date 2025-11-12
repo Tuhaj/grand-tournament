@@ -264,6 +264,11 @@ const gameState = {
         gloryPoints: 0,
         total: 0
     },
+    tournament: {
+        currentRound: 1,
+        totalRounds: 3,
+        roundHistory: []
+    },
     history: []
 };
 
@@ -328,6 +333,9 @@ function restoreUI() {
         // Update mobile score
         updateMobileScore();
     }
+
+    // Restore round display
+    updateRoundDisplay();
 }
 
 function clearSavedGame() {
@@ -400,6 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     updateMobileScore();
+    updateRoundDisplay();
 });
 
 function setupEventListeners() {
@@ -853,6 +862,380 @@ function saveSelectedItems() {
     saveGame();
 }
 
+// === ROUND MANAGEMENT ===
+
+// Update round indicator display
+function updateRoundDisplay() {
+    const roundIndicator = document.getElementById('roundIndicator');
+    if (roundIndicator) {
+        const { currentRound, totalRounds } = gameState.tournament;
+        roundIndicator.innerHTML = `
+            <i class="bi bi-flag-fill"></i> Runda ${currentRound} / ${totalRounds}
+        `;
+    }
+}
+
+// Finish current round
+function finishRound() {
+    // Check if both players have calculated their totals
+    if (gameState.player1.total === 0 && gameState.player2.total === 0) {
+        alert('Najpierw obaj gracze muszą obliczyć swoje wyniki!');
+        return;
+    }
+
+    const player1Score = gameState.player1.total;
+    const player2Score = gameState.player2.total;
+    const player1Name = gameState.player1.name;
+    const player2Name = gameState.player2.name;
+
+    // Determine winner
+    let winner = null;
+    let winnerName = '';
+    let gloryChange = 0;
+
+    if (player1Score > player2Score) {
+        winner = 'player1';
+        winnerName = player1Name;
+        gloryChange = 10;
+        gameState.player1.gloryPoints += gloryChange;
+    } else if (player2Score > player1Score) {
+        winner = 'player2';
+        winnerName = player2Name;
+        gloryChange = 10;
+        gameState.player2.gloryPoints += gloryChange;
+    } else {
+        winner = 'draw';
+        winnerName = 'Remis';
+        gloryChange = 5;
+        gameState.player1.gloryPoints += gloryChange;
+        gameState.player2.gloryPoints += gloryChange;
+    }
+
+    // Record round result
+    const roundResult = {
+        round: gameState.tournament.currentRound,
+        winner: winner,
+        winnerName: winnerName,
+        player1Score: player1Score,
+        player2Score: player2Score,
+        player1Glory: gameState.player1.gloryPoints,
+        player2Glory: gameState.player2.gloryPoints,
+        timestamp: new Date().toLocaleString('pl-PL')
+    };
+
+    gameState.tournament.roundHistory.push(roundResult);
+
+    // Update glory display
+    document.getElementById('glory1').textContent = gameState.player1.gloryPoints;
+    document.getElementById('glory2').textContent = gameState.player2.gloryPoints;
+    updateMobileScore();
+
+    // Add to history
+    addToHistory(`🏁 Runda ${gameState.tournament.currentRound} zakończona! Zwycięzca: ${winnerName} (${player1Score} vs ${player2Score})`);
+
+    // Save game
+    saveGame();
+
+    // Show round summary
+    showRoundSummary(roundResult);
+}
+
+// Show round summary modal
+function showRoundSummary(roundResult) {
+    const modalBody = document.querySelector('#roundSummaryModal .modal-body');
+    const { currentRound, totalRounds } = gameState.tournament;
+
+    let summaryHTML = `
+        <div class="text-center mb-4">
+            <h3 class="mb-3">🏁 Runda ${roundResult.round} zakończona!</h3>
+    `;
+
+    // Display winner
+    if (roundResult.winner === 'draw') {
+        summaryHTML += `
+            <div class="alert alert-info">
+                <h4><i class="bi bi-shuffle"></i> Remis!</h4>
+                <p class="mb-0">Obaj gracze otrzymują po 5 punktów chwały</p>
+            </div>
+        `;
+    } else {
+        const winnerIcon = roundResult.winner === 'player1' ? '🔵' : '🔴';
+        summaryHTML += `
+            <div class="alert alert-success">
+                <h4>${winnerIcon} Zwycięzca: ${roundResult.winnerName}</h4>
+                <p class="mb-0">+10 punktów chwały!</p>
+            </div>
+        `;
+    }
+
+    // Scores
+    summaryHTML += `
+        </div>
+        <div class="row mb-4">
+            <div class="col-6 text-center">
+                <div class="card ${roundResult.winner === 'player1' ? 'border-success' : ''}">
+                    <div class="card-body">
+                        <h5 class="text-primary">${gameState.player1.name}</h5>
+                        <div class="display-6 fw-bold">${roundResult.player1Score}</div>
+                        <div class="text-muted mt-2">
+                            <i class="bi bi-trophy-fill text-warning"></i> ${roundResult.player1Glory} chwały
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 text-center">
+                <div class="card ${roundResult.winner === 'player2' ? 'border-success' : ''}">
+                    <div class="card-body">
+                        <h5 class="text-danger">${gameState.player2.name}</h5>
+                        <div class="display-6 fw-bold">${roundResult.player2Score}</div>
+                        <div class="text-muted mt-2">
+                            <i class="bi bi-trophy-fill text-warning"></i> ${roundResult.player2Glory} chwały
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Check if tournament is finished
+    if (currentRound >= totalRounds) {
+        summaryHTML += `
+            <div class="alert alert-warning text-center">
+                <h5><i class="bi bi-flag-checkered"></i> To była ostatnia runda turnieju!</h5>
+                <button class="btn btn-success btn-lg mt-3" onclick="showTournamentSummary()">
+                    <i class="bi bi-trophy-fill"></i> Zobacz Wyniki Turnieju
+                </button>
+            </div>
+        `;
+    } else {
+        summaryHTML += `
+            <div class="text-center">
+                <button class="btn btn-primary btn-lg" onclick="nextRound()" data-bs-dismiss="modal">
+                    <i class="bi bi-arrow-right-circle"></i> Następna Runda
+                </button>
+            </div>
+        `;
+    }
+
+    modalBody.innerHTML = summaryHTML;
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('roundSummaryModal'));
+    modal.show();
+}
+
+// Advance to next round
+function nextRound() {
+    const { currentRound, totalRounds } = gameState.tournament;
+
+    if (currentRound >= totalRounds) {
+        showTournamentSummary();
+        return;
+    }
+
+    // Advance round
+    gameState.tournament.currentRound++;
+
+    // Clear round-specific data
+    gameState.player1.diceRolls = [];
+    gameState.player1.phases = [0, 0, 0, 0];
+    gameState.player1.total = 0;
+
+    gameState.player2.diceRolls = [];
+    gameState.player2.phases = [0, 0, 0, 0];
+    gameState.player2.total = 0;
+
+    // Reset UI
+    for (let player = 1; player <= 2; player++) {
+        // Dice
+        document.getElementById(`diceResult${player}`).querySelector('.result-display').innerHTML = '-';
+        document.getElementById(`total${player}`).textContent = '0';
+
+        // Phases
+        for (let i = 1; i <= 4; i++) {
+            document.getElementById(`phase${i}_${player}`).value = '';
+        }
+    }
+
+    // Update display
+    updateRoundDisplay();
+    updateMobileScore();
+
+    addToHistory(`🎯 Runda ${gameState.tournament.currentRound} rozpoczęta!`);
+
+    saveGame();
+}
+
+// Show tournament summary
+function showTournamentSummary() {
+    const modalBody = document.querySelector('#tournamentSummaryModal .modal-body');
+    const { roundHistory } = gameState.tournament;
+
+    // Determine overall winner by glory points
+    const player1Glory = gameState.player1.gloryPoints;
+    const player2Glory = gameState.player2.gloryPoints;
+    let overallWinner = '';
+    let overallWinnerIcon = '';
+
+    if (player1Glory > player2Glory) {
+        overallWinner = gameState.player1.name;
+        overallWinnerIcon = '🔵';
+    } else if (player2Glory > player1Glory) {
+        overallWinner = gameState.player2.name;
+        overallWinnerIcon = '🔴';
+    } else {
+        overallWinner = 'Remis';
+        overallWinnerIcon = '🤝';
+    }
+
+    let summaryHTML = `
+        <div class="text-center mb-4">
+            <h2 class="mb-3">🏆 Turniej Zakończony!</h2>
+            <div class="alert alert-success">
+                <h3>${overallWinnerIcon} Zwycięzca Turnieju: ${overallWinner}</h3>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-6 text-center">
+                <div class="card ${player1Glory > player2Glory ? 'border-success border-3' : ''}">
+                    <div class="card-body">
+                        <h4 class="text-primary">${gameState.player1.name}</h4>
+                        <div class="display-4 fw-bold text-warning">
+                            <i class="bi bi-trophy-fill"></i> ${player1Glory}
+                        </div>
+                        <p class="text-muted mb-0">punktów chwały</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 text-center">
+                <div class="card ${player2Glory > player1Glory ? 'border-success border-3' : ''}">
+                    <div class="card-body">
+                        <h4 class="text-danger">${gameState.player2.name}</h4>
+                        <div class="display-4 fw-bold text-warning">
+                            <i class="bi bi-trophy-fill"></i> ${player2Glory}
+                        </div>
+                        <p class="text-muted mb-0">punktów chwały</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h5 class="mb-3"><i class="bi bi-list-ol"></i> Historia Rund:</h5>
+        <div class="list-group mb-4">
+    `;
+
+    // Round history
+    roundHistory.forEach(round => {
+        const roundWinnerBadge = round.winner === 'draw'
+            ? '<span class="badge bg-info">Remis</span>'
+            : round.winner === 'player1'
+            ? `<span class="badge bg-primary">${round.winnerName}</span>`
+            : `<span class="badge bg-danger">${round.winnerName}</span>`;
+
+        summaryHTML += `
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Runda ${round.round}</strong> - ${roundWinnerBadge}
+                    </div>
+                    <div>
+                        <span class="badge bg-light text-dark">${round.player1Score}</span>
+                        vs
+                        <span class="badge bg-light text-dark">${round.player2Score}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    summaryHTML += `
+        </div>
+        <div class="text-center">
+            <button class="btn btn-success btn-lg me-2" onclick="startNewTournament()" data-bs-dismiss="modal">
+                <i class="bi bi-arrow-repeat"></i> Nowy Turniej
+            </button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+                <i class="bi bi-x-circle"></i> Zamknij
+            </button>
+        </div>
+    `;
+
+    modalBody.innerHTML = summaryHTML;
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('tournamentSummaryModal'));
+    modal.show();
+}
+
+// Start new tournament
+function startNewTournament() {
+    if (confirm('Czy na pewno chcesz rozpocząć nowy turniej? Obecny postęp zostanie zapisany w historii.')) {
+        // Keep player names but reset everything else
+        const player1Name = gameState.player1.name;
+        const player2Name = gameState.player2.name;
+
+        // Archive current tournament to history
+        if (gameState.tournament.roundHistory.length > 0) {
+            const archiveEntry = `🏆 Turniej zakończony - Wynik: ${gameState.player1.name} (${gameState.player1.gloryPoints}) vs ${gameState.player2.name} (${gameState.player2.gloryPoints})`;
+            addToHistory(archiveEntry);
+        }
+
+        // Reset game state
+        gameState.player1 = {
+            name: player1Name,
+            knight: null,
+            modifier: null,
+            cards: [],
+            items: [],
+            diceRolls: [],
+            phases: [0, 0, 0, 0],
+            gloryPoints: 0,
+            total: 0
+        };
+
+        gameState.player2 = {
+            name: player2Name,
+            knight: null,
+            modifier: null,
+            cards: [],
+            items: [],
+            diceRolls: [],
+            phases: [0, 0, 0, 0],
+            gloryPoints: 0,
+            total: 0
+        };
+
+        gameState.tournament = {
+            currentRound: 1,
+            totalRounds: 3,
+            roundHistory: []
+        };
+
+        // Reset UI
+        for (let player = 1; player <= 2; player++) {
+            document.getElementById(`knight${player}`).innerHTML = '<button class="btn btn-outline-' + (player === 1 ? 'primary' : 'danger') + ' w-100" onclick="drawKnight(' + player + ')"><i class="bi bi-shuffle"></i> Losuj Rycerza</button>';
+            document.getElementById(`modifier${player}`).innerHTML = '<button class="btn btn-outline-' + (player === 1 ? 'primary' : 'danger') + ' w-100" onclick="drawModifier(' + player + ')"><i class="bi bi-shuffle"></i> Losuj Przydomek</button>';
+            document.getElementById(`diceResult${player}`).querySelector('.result-display').innerHTML = '-';
+            document.getElementById(`total${player}`).textContent = '0';
+            document.getElementById(`glory${player}`).textContent = '0';
+
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`phase${i}_${player}`).value = '';
+            }
+        }
+
+        // Redraw cards
+        gameState.player1.cards = drawRandomCards(3);
+        gameState.player2.cards = drawRandomCards(3);
+
+        updateRoundDisplay();
+        updateMobileScore();
+        addToHistory('🎮 Rozpoczęto nowy turniej!');
+        saveGame();
+    }
+}
+
 // Eksport funkcji do globalnego scope (dla inline onclick)
 window.drawKnight = drawKnight;
 window.drawModifier = drawModifier;
@@ -865,6 +1248,11 @@ window.saveSelectedItems = saveSelectedItems;
 window.clearDiceRolls = clearDiceRolls;
 window.editPlayerName = editPlayerName;
 window.showModifiersSummary = showModifiersSummary;
+window.finishRound = finishRound;
+window.nextRound = nextRound;
+window.showRoundSummary = showRoundSummary;
+window.showTournamentSummary = showTournamentSummary;
+window.startNewTournament = startNewTournament;
 
 // Dodatkowe funkcje pomocnicze
 function clearDiceRolls(player) {
